@@ -2,15 +2,15 @@
   <div class="login">
     <div class="box">
       <h2>登录页面</h2>
-      <el-form label-position="top" label-width="80px">
-        <el-form-item label="用户名">
-          <el-input></el-input>
+      <el-form label-position="top" ref="loginForm" :model="loginForm" :rules="rules" label-width="80px">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="loginForm.username"></el-input>
         </el-form-item>
-        <el-form-item label="密码">
-          <el-input></el-input>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="loginForm.password"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="button">登录</el-button>
+          <el-button type="primary" @click="submit('loginForm')" class="button">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -19,7 +19,37 @@
 
 <script>
 export default {
-  name: "login"
+  name: "login",
+  data() {
+    return {
+      loginForm: {
+        username: "",
+        password: ""
+      },
+      rules: {
+        username: [
+          {required: true,message: "用户名不能为空",trigger: "blur"},
+          {min: 6,max: 16,message: "长度在6-16位",trigger: "blur"}
+        ],
+        password: [
+          {required: true,message: "密码不能为空",trigger: "blur"},
+          {min: 6,max: 16,message: "长度在6-16位",trigger: "blur"}
+        ]
+      }
+    };
+  },
+  methods: {
+    submit(formName){
+        this.$refs[formName].validate(valid=>{
+            if(valid){
+
+            }else{
+                this.$message.error("数据格式错误，请根据提示修改");
+                return false
+            }
+        })
+    }
+  }
 };
 </script>
 
