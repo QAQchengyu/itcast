@@ -58,7 +58,7 @@
       :total="5"
     ></el-pagination>
 
-    <!-- 弹出对话框 -->
+    <!-- 添加用户信息 弹出对话框 -->
     <el-dialog title="添加用户" :visible.sync="addFormVisible">
       <el-form :model="addForm" :rules="addRules" ref="addForm">
         <el-form-item label="用户名" label-width="100px" prop="username">
@@ -79,6 +79,25 @@
         <el-button type="primary" @click="submitAdd('addForm')">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 修改用户信息 -->
+    <el-dialog title="修改用户" :visible.sync="editFormVisible">
+      <el-form :model="editForm" :rules="addRules" ref="editForm">
+        <el-form-item label="用户名" label-width="100px" disabled prop="username">
+          <el-input v-model="editForm.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" label-width="100px">
+          <el-input v-model="editForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" label-width="100px">
+          <el-input v-model="editForm.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitEdit('editForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -95,14 +114,24 @@ export default {
         pagesize: 10
       },
       userList: [],
-      // 是否显示对话框 默认fasle
+      // 是否显示添加对话框 默认fasle
       addFormVisible: false,
+      // 是否显示修改对话框
+      editFormVisible: false,
+      // 添加表单
       addForm: {
         username: "",
         password: "",
         email: "",
         mobile: ""
       },
+      // 修改表单
+      editForm: {
+        username: "",
+        email: "",
+        mobile: ""
+      },
+      // 验证规则
       addRules: {
         username: [
           { required: true, message: "用户名不能为空", tigger: "blur" }
@@ -120,9 +149,12 @@ export default {
     };
   },
   methods: {
-    handleEdit(index, row) {
-      console.log(index);
-      console.log(row);
+    async handleEdit(index, row) {
+      let res = await this.$axios.get(`users/${row.id}`);
+      this.editForm = res.data.data;
+      if (res.data.meta.status === 200) {
+        this.editFormVisible = true;
+      }
     },
     async search() {
       let res = await this.$axios.get("users", {
@@ -157,9 +189,21 @@ export default {
         }
       });
     },
+    // 保存修改
+    async submitEdit(formName) {
+      let res = await this.$axios.put(`users/${this.editForm.id}`, {
+        email: this.editForm.email,
+        mobile: this.editForm.mobile
+      });
+      if(res.data.meta.status == 200){
+        this.search();
+        this.editFormVisible = false;
+      }
+      
+    },
     resetForm(formName) {
       this.$refs[formName].resetFields();
-    },    
+    },
     del(row) {
       this.$confirm("大侠，你真的要删除该用户吗?", "提示", {
         confirmButtonText: "狠心删除",
@@ -170,7 +214,7 @@ export default {
           // 发请求
           let res = await this.$axios.delete(`users/${row.id}`);
           console.log(res);
-          if(res.data.meta.status === 200){
+          if (res.data.meta.status === 200) {
             this.search();
           }
         })
