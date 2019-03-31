@@ -16,6 +16,28 @@ import './assets/base.scss'
 
 Vue.config.productionTip = false
 
+// 设置axios拦截器
+// 请求拦截器 请求之前统一设置一些内容 比如token
+axios.interceptors.request.use(function (config) {
+  // 统一设置token
+  config.headers.Authorization = window.sessionStorage.getItem("token")
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
+// 响应拦截器 统一处理响应
+axios.interceptors.response.use(function (response) {
+  // 统一弹框
+  if ([200, 201, 204].indexOf(response.data.meta.status) != -1) {
+    Vue.prototype.$message.success(response.data.meta.msg)
+  } else {
+    Vue.prototype.$message.warning(response.data.meta.msg)
+  }
+  return response;
+}, function (error) {
+  return Promise.reject(error);
+});
+
 // 导入路由
 import router from "./router.js"
 
