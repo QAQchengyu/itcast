@@ -9,7 +9,7 @@
           <h2>又黄又焖又辣鸡</h2>
         </el-col>
         <el-col :span="1">
-          <el-button type="success">退出</el-button>
+          <el-button type="success" @click="logout">退出</el-button>
         </el-col>
       </el-row>
     </el-header>
@@ -42,7 +42,15 @@
 
 <script>
 export default {
-  name: "index"
+  name: "index",
+  methods: {
+    logout(){
+      // 退出清除缓存
+      window.sessionStorage.removeItem("token");
+      // 跳转到登录页
+      this.$router.push("/login")
+    }
+  }
 };
 </script>
 
