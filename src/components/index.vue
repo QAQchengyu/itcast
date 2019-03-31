@@ -44,11 +44,18 @@
 export default {
   name: "index",
   methods: {
-    logout(){
+    logout() {
       // 退出清除缓存
       window.sessionStorage.removeItem("token");
       // 跳转到登录页
-      this.$router.push("/login")
+      this.$router.push("/login");
+    }
+  },
+  // 不需要获取组件中的数据 只是判断是否有缓存数据 尽可能早即可 使用最早执行的钩子
+  beforeCreate() {
+    if (!window.sessionStorage.getItem("token")) {
+      this.$message.error("请先登录");
+      this.$router.push("/login");
     }
   }
 };
