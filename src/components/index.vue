@@ -82,6 +82,9 @@ export default {
     }
   }
   .botton-container {
+    .aside li span{
+      font-size: 14px;
+    }
     .main {
       padding-top: 0;
       background-color: #e9eef3;

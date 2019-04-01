@@ -1,4 +1,4 @@
-<template>
+  <template>
   <div class="login">
     <div class="box">
       <h2>登录页面</h2>
