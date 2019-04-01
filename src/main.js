@@ -14,6 +14,10 @@ Vue.prototype.$axios = axios
 // 导入公共样式
 import './assets/base.scss'
 
+// 导入面包屑
+import myBread from './components/myBread.vue'
+Vue.component('my-bread',myBread)
+
 Vue.config.productionTip = false
 
 // 设置axios拦截器

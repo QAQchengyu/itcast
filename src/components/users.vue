@@ -1,10 +1,7 @@
 <template>
   <div class="user-container">
-    <el-breadcrumb separator-class="el-icon-arrow-right" class="nav">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <!-- 面包屑 -->
+    <my-bread sectitle="用户管理" threetitle="用户列表"></my-bread>
     <el-row>
       <el-col :span="5">
         <el-input
@@ -307,12 +304,5 @@ export default {
 </script>
 
 <style lang="scss">
-.user-container {
-  .nav {
-    line-height: 45px;
-    font-size: 14px;
-    background: #d3dce6;
-    padding-left: 10px;
-  }
-}
+
 </style>
