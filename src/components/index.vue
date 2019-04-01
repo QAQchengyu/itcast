@@ -13,20 +13,19 @@
         </el-col>
       </el-row>
     </el-header>
+ 
     <el-container class="botton-container">
+   <!-- 侧边栏 -->
       <el-aside class="aside" width="200px">
-        <el-menu
-          default-active="2"
-          class="el-menu-vertical-demo"
-          router
-        >
-          <el-submenu index="1">
+        <!-- 使用饿了吗UI 导航栏菜单   -->
+        <el-menu default-active="users" class="el-menu-vertical-demo" router>
+          <el-submenu :index="item.id+''" v-for="item in menuList">
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>用户管理</span>
+              <span>{{item.authName}}</span>
             </template>
-            <el-menu-item index="/users">
-              <span class="el-icon-menu"></span>用户列表
+            <el-menu-item :index="it.path" v-for="it in item.children">
+              <span class="el-icon-menu">{{it.authName}}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -41,6 +40,12 @@
 <script>
 export default {
   name: "index",
+  data() {
+    return {
+      // 菜单列表
+      menuList: []
+    };
+  },
   methods: {
     logout() {
       // 退出清除缓存
@@ -55,6 +60,13 @@ export default {
       this.$message.error("请先登录");
       this.$router.push("/login");
     }
+  },
+  // 钩子函数
+  async created() {
+    let res = await this.$axios.get("menus");
+    console.log(res);
+    
+    this.menuList = res.data.data;
   }
 };
 </script>
