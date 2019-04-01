@@ -46,16 +46,24 @@
             plain
           ></el-button>
           <el-button type="danger" size="mini" icon="el-icon-delete" @click="del(scope.row)" plain></el-button>
-          <el-button type="warning" size="mini" icon="el-icon-check" plain></el-button>
+          <el-button
+            type="warning"
+            size="mini"
+            icon="el-icon-check"
+            @click="showRole(scope.row)"
+            plain
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页器 -->
     <el-pagination
-      :page-sizes="[10, 20, 30, 40]"
-      :page-size="100"
+      :page-sizes="[5, 10, 15, 20]"
+      :page-size="sendData.pagesize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="5"
+      @size-change="sizeChange"
+      @current-change="currentChange"
+      :total="total"
     ></el-pagination>
 
     <!-- 添加用户信息 弹出对话框 -->
@@ -98,6 +106,28 @@
         <el-button type="primary" @click="submitEdit('editForm')">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 角色设置 -->
+    <el-dialog title="用户角色" :visible.sync="roleFormVisible">
+      <el-form ref="editForm">
+        <el-form-item label="当前角色" label-width="100px">{{editUser.username}}</el-form-item>
+        <el-form-item label="请选择角色" label-width="100px">
+          <el-select v-model="editUser.role_name" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="roleFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitRole('editForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -118,6 +148,12 @@ export default {
       addFormVisible: false,
       // 是否显示修改对话框
       editFormVisible: false,
+      // 是否显示角色对话框
+      roleFormVisible: false,
+      // 当前正在编辑的用户信息
+      editUser: {},
+      // 用户角色列表
+      roleList: [],
       // 添加表单
       addForm: {
         username: "",
@@ -131,6 +167,7 @@ export default {
         email: "",
         mobile: ""
       },
+
       // 验证规则
       addRules: {
         username: [
@@ -171,18 +208,19 @@ export default {
       this.$axios.put(`users/${row.id}/state/${row.mg_state}`);
     },
     submitAdd(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate(async valid => {
         console.log(valid);
 
         if (valid) {
           // 成功调用接口
-          this.$axios.post("users", this.addForm);
+          let res = await this.$axios.post("users", this.addForm);
+          console.log(res);
           // 新增成功就重新获取用户列表
-          if (res.message.status === 201) {
+          if (res.data.meta.status === 201) {
             this.search();
+            // 关闭对话框
+            this.addFormVisible = false;
           }
-          // 关闭对话框
-          this.addFormVisible = false;
         } else {
           this.$message.error("大侠，账号或密码格式有误");
           return false;
@@ -195,11 +233,10 @@ export default {
         email: this.editForm.email,
         mobile: this.editForm.mobile
       });
-      if(res.data.meta.status == 200){
+      if (res.data.meta.status == 200) {
         this.search();
         this.editFormVisible = false;
       }
-      
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
@@ -224,9 +261,45 @@ export default {
             message: "已取消删除"
           });
         });
-    }
+    },
+    //
+    async showRole(row) {
+      // 编辑角色对话框显示
+      this.roleFormVisible = true;
+      // 保存编辑的用户信息
+      this.editUser = row;
+      // 获取所有角色的列表
+      let res = await this.$axios.get("roles");
+      console.log(res);
+
+      this.roleList = res.data.data;
+    },
+    // 分配角色
+    async submitRole() {
+      let res = await this.$axios.put(`users/${this.editUser.id}/role`, {
+        rid: this.editUser.role_name
+      });
+      if (res.data.meta.status === 200) {
+        this.roleFormVisible = false;
+        this.search();
+      }
+    },
+    // 页码改变
+    sizeChange(size){
+      console.log(size);
+      
+      this.sendData.pagesize = size;
+      this.search();
+    },
+    // 也容量改变
+    currentChange(current){
+      console.log(current);
+
+      this.sendData.pagenum = current;
+      this.search();
+    },
   },
-  // 接口调用
+  // 接口调用 
   created() {
     this.search();
   }

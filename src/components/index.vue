@@ -70,8 +70,6 @@ export default {
     }
   }
   .botton-container {
-    .aside {
-    }
     .main {
       padding-top: 0;
       background-color: #e9eef3;
