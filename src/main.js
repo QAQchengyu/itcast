@@ -18,6 +18,12 @@ import './assets/base.scss'
 import myBread from './components/myBread.vue'
 Vue.component('my-bread',myBread)
 
+// 导入moment组件和过滤器
+import moment from 'moment'
+Vue.filter('formatTime', (value,formatTem)=>{
+  return moment(value).format(formatTem);
+})
+
 // 导入我的axios插件
 import myaxios from './myaxios.js'
 // use一下 调用了 插件的install方法

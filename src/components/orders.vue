@@ -1,24 +1,27 @@
 <template>
-  <div class="user-container">
+  <div class="orders-container">
     <!-- 面包屑 -->
     <my-bread sectitle="订单管理" threetitle="订单列表"></my-bread>
-    <el-table :data="ordersList" style="width: 100%" border>
-      <el-table-column prop="index" label="#" width="40"></el-table-column>
-      <el-table-column prop="username" label="订单编号" width="160"></el-table-column>
-      <el-table-column prop="email" label="订单价格" width="160"></el-table-column>
-      <el-table-column prop="mobile" label="是否付款"></el-table-column>
-      <el-table-column prop="mobile" label="是否发货"></el-table-column>
-      <el-table-column prop="mobile" label="下单时间"></el-table-column>
+    <el-table :data="orderList" style="width: 100%" border>
+      <el-table-column type="index" label="#" width="40"></el-table-column>
+      <el-table-column prop="order_number" label="订单编号" width="160"></el-table-column>
+      <el-table-column prop="order_price" label="订单价格" width="160"></el-table-column>
+      <el-table-column prop="order_pay" label="是否付款">
+        <template slot-scope="scope">
+          <template>
+            <el-button v-if="scope.row.order_pay==='0'" type="danger" plain>未付款</el-button>
+            <el-button v-else type="success" plain>已付款</el-button>
+          </template>
+        </template>
+      </el-table-column>
+      <el-table-column prop="is_send" label="是否发货"></el-table-column>
+      <el-table-column prop="create_time" label="下单时间">
+        <template slot-scope="scope">{{scope.row.create_time | formatTime('YYYY-MM-DD HH:mm-ss')}}</template>
+      </el-table-column>
 
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="mini"
-            icon="el-icon-edit"
-            @click="handleEdit(scope.$index,scope.row)"
-            plain
-          ></el-button>
+          <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleEdit()" plain></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -31,12 +34,38 @@
       @current-change="currentChange"
       :total="total"
     ></el-pagination>
+    <!-- 省市级联 -->
+    <el-dialog title="修改订单地址" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="省市级/县" :label-width="formLabelWidth">
+        <v-distpicker></v-distpicker>
+          <el-cascader
+            expand-trigger="hover"
+            :options="options"
+            v-model="selectedOptions2"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
+    
   </div>
 </template>
 
 <script>
+import options from "../assets/city_data2017_element.js"
+
+import VDistpicker from 'v-distpicker'
+
 export default {
   name: "cates",
+  components: { VDistpicker },
   data() {
     return {
       // 总条数
@@ -46,27 +75,35 @@ export default {
         pagenum: 1,
         pagesize: 10
       },
-      ordersList: [{}, {}]
+      options,
+      selectedOptions2: [],
+      orderList: [{}, {}],
+      // 省市级联弹框是否显示
+      dialogFormVisible: false,
+      form: {
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
+        delivery: false,
+        type: [],
+        resource: "",
+        desc: ""
+      },
+      formLabelWidth: "120px"
     };
   },
   methods: {
-    async handleEdit(index, row) {
-      let res = await this.$axios.get(`users/${row.id}`);
-      this.editForm = res.data.data;
-      if (res.data.meta.status === 200) {
-        this.editFormVisible = true;
-      }
+    handleEdit() {
+      this.dialogFormVisible = true;
     },
     async search() {
-      let res = await this.$axios.get("users", {
-        // 已使用拦截器设置token 不用再单独设置
-        // headers: {
-        //   Authorization: window.sessionStorage.getItem("token")
-        // },
+      let res = await this.$axios.get("orders", {
         params: this.sendData
       });
+      // console.log(res);
+      this.orderList = res.data.data.goods;
       this.total = res.data.data.total;
-      this.userList = res.data.data.users;
     },
     stateChange(row) {
       this.$axios.put(`users/${row.id}/state/${row.mg_state}`);
