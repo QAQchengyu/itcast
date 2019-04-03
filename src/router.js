@@ -13,9 +13,15 @@ import categories from "./components/categories.vue"
 import orders from "./components/orders.vue"
 import params from "./components/params.vue"
 import reports from "./components/reports.vue"
+import error from "./components/error.vue"
+
 
 // 规则
 let routes = [{
+        path: "/error",
+        component: error
+    },
+    {
         path: "/login",
         component: login,
         meta: {
@@ -79,6 +85,14 @@ let router = new VueRouter({
 */
 
 router.beforeEach((to, from, next) => {
+
+    if(to.matched.length===0){
+        Vue.prototype.$message.error('大锅，你滴网址有问题，检查一哈吧')
+        next('/error')
+    }
+
+
+
     // console.log(to);
     // 在导航守卫触发时，可以通过to获取到这个meta字段
     // 把原本对路径的判断 变为 对meta中字段判断

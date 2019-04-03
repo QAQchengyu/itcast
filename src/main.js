@@ -18,29 +18,12 @@ import './assets/base.scss'
 import myBread from './components/myBread.vue'
 Vue.component('my-bread',myBread)
 
-Vue.config.productionTip = false
+// 导入我的axios插件
+import myaxios from './myaxios.js'
+// use一下 调用了 插件的install方法
+Vue.use(myaxios)
 
-// 设置axios拦截器
-// 请求拦截器 请求之前统一设置一些内容 比如token
-axios.interceptors.request.use(function (config) {
-  // 统一设置token
-  config.headers.Authorization = window.sessionStorage.getItem("token")
-  return config;
-}, function (error) {
-  return Promise.reject(error);
-});
-// 响应拦截器 统一处理响应
-axios.interceptors.response.use(function (response) {
-  // 统一弹框
-  if ([200, 201, 204].indexOf(response.data.meta.status) != -1) {
-    Vue.prototype.$message.success(response.data.meta.msg)
-  } else {
-    Vue.prototype.$message.warning(response.data.meta.msg)
-  }
-  return response;
-}, function (error) {
-  return Promise.reject(error);
-});
+Vue.config.productionTip = false
 
 // 导入路由
 import router from "./router.js"
