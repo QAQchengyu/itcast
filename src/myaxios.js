@@ -30,8 +30,8 @@ export default {
     axios.interceptors.response.use(
       function(response) {
         // Do something with response data
-        console.log('响应拦截')
-        console.log(response)
+        // console.log('响应拦截')
+        
         // 非法 token判断
         if (
           response.data.meta.msg === '无效token' &&

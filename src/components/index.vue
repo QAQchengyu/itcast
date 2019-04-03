@@ -64,7 +64,7 @@ export default {
   // 钩子函数
   async created() {
     let res = await this.$axios.get("menus");
-    console.log(res);
+    // console.log(res);
     
     this.menuList = res.data.data;
   }

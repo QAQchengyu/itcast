@@ -3,29 +3,15 @@
     <!-- 面包屑 -->
     <my-bread sectitle="权限管理" threetitle="权限列表"></my-bread>
     <el-row></el-row>
-    <el-table style="width: 100%" border>
-      <el-table-column label="#" width="40"></el-table-column>
-      <el-table-column label="权限名称" width="160"></el-table-column>
-      <el-table-column label="路径" width="160"></el-table-column>
-      <el-table-column label="层级"></el-table-column>
-
-      <el-table-column label="操作">
+    <el-table :data="rightList" style="width: 100%" border>
+      <el-table-column type="index" width="40"></el-table-column>
+      <el-table-column prop="authName" label="权限名称" width="160"></el-table-column>
+      <el-table-column prop="path" label="路径" width="160"></el-table-column>
+      <el-table-column prop="level" label="层级">
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="mini"
-            icon="el-icon-edit"
-            @click="handleEdit(scope.$index,scope.row)"
-            plain
-          ></el-button>
-          <el-button type="danger" size="mini" icon="el-icon-delete" @click="del(scope.row)" plain></el-button>
-          <el-button
-            type="warning"
-            size="mini"
-            icon="el-icon-check"
-            @click="showRole(scope.row)"
-            plain
-          ></el-button>
+          <span v-if="scope.row.level==='0'">一级</span>
+          <span v-else-if="scope.row.level==='1'">二级</span>
+          <span v-else>三级</span>
         </template>
       </el-table-column>
     </el-table>
@@ -33,8 +19,20 @@
 </template>
 
 <script>
-
-
+export default {
+  name: "rights",
+  data() {
+    return {
+      rightList: []
+    };
+  },
+  async created() {
+    let res = await this.$axios.get("rights/list");
+    console.log(res);
+    
+    this.rightList = res.data.data;
+  }
+};
 </script>
 
 <style>
