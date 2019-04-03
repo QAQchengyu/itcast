@@ -18,7 +18,7 @@
       </el-col>
     </el-row>
     <el-table :data="userList" style="width: 100%" border>
-      <el-table-column prop="index" label="#" width="40"></el-table-column>
+      <el-table-column type="index" label="#" width="40"></el-table-column>
       <el-table-column prop="username" label="姓名" width="160"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="160"></el-table-column>
       <el-table-column prop="mobile" label="电话"></el-table-column>
@@ -200,18 +200,20 @@ export default {
       });
       this.total = res.data.data.total;
       this.userList = res.data.data.users;
+      console.log(res);
+      
     },
     stateChange(row) {
       this.$axios.put(`users/${row.id}/state/${row.mg_state}`);
     },
     submitAdd(formName) {
       this.$refs[formName].validate(async valid => {
-        console.log(valid);
+        // console.log(valid);
 
         if (valid) {
           // 成功调用接口
           let res = await this.$axios.post("users", this.addForm);
-          console.log(res);
+          // console.log(res);
           // 新增成功就重新获取用户列表
           if (res.data.meta.status === 201) {
             this.search();
@@ -247,7 +249,7 @@ export default {
         .then(async () => {
           // 发请求
           let res = await this.$axios.delete(`users/${row.id}`);
-          console.log(res);
+          // console.log(res);
           if (res.data.meta.status === 200) {
             this.search();
           }

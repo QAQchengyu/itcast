@@ -2,8 +2,7 @@
   <div class="user-container">
     <!-- 面包屑 -->
     <my-bread sectitle="权限管理" threetitle="权限列表"></my-bread>
-    <el-row>
-    </el-row>
+    <el-row></el-row>
     <el-table style="width: 100%" border>
       <el-table-column label="#" width="40"></el-table-column>
       <el-table-column label="权限名称" width="160"></el-table-column>
@@ -30,17 +29,13 @@
         </template>
       </el-table-column>
     </el-table>
-
   </div>
-
 </template>
 
 <script>
-export default {
 
-}
+
 </script>
 
 <style>
-
 </style>
